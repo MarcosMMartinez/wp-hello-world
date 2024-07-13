@@ -1,0 +1,40 @@
+name: AppServiceSSHTunnelTest
+
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in with Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: |
+            az account show
+            az storage -h
+            az webapp create-remote-connection --name markito-wp --resource-group Web-Apps --port 5555 &
+      
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: localhost
+          username: root
+          password: Docker!
+          port: 5555
+          script: whoami
+
+
+
+
+    
