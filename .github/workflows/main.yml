@@ -23,7 +23,7 @@ jobs:
           inlineScript: |
             az account show
             az storage -h
-            az webapp create-remote-connection --name markito-wp --resource-group Web-Apps --port 5555 &
+            az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
       
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.3
