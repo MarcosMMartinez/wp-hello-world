@@ -48,7 +48,7 @@ jobs:
 
         echo "Port Listening"
         # Port is open, proceed with the script
-        sshpass -p "Docker!" ssh root@localhost -p 5558 "ls"
+        sshpass -p "Docker!" ssh -o StrictHostKeyChecking=no root@localhost -p 5558 "ls"
 
 
 
