@@ -21,8 +21,6 @@ jobs:
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az account show
-            az storage -h
             az account set -s 'Marcos Subscription'
             az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
             sleep 10
