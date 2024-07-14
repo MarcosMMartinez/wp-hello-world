@@ -4,44 +4,49 @@ on:
   push:
   workflow_dispatch:
 
+
 jobs:
-  build-and-deploy:
+  execute-script:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Log in with Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y sshpass azure-cli
 
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-          inlineScript: |
-            az account set -s 'Marcos Subscription'            
-            sudo apt-get install sshpass -y
+    - name: Authenticate with Azure
+      run: |
+        az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
-            az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
+    - name: Execute script
+      env:
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        #!/bin/bash
 
-            # Function to check if the port is open
-            check_port() {
-              ss -ltn | grep -q "127.0.0.1:5558"
-            }
+        # Define the port to check
+        PORT=1234
+        HOST=127.0.0.1
 
-            # Loop until the port is open
-            echo "Waiting for the port $PORT to be open..."
-            while ! check_port; do
-              sleep 1
-            done
+        az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
 
-            # Port is open, proceed with the script
-            sshpass -p "Docker!" ssh root@localhost -p 5555 "ls"
-            
-      
+        # Function to check if the port is open
+        check_port() {
+          ss -ltn | grep -q "127.0.0.1:5558"
+        }
 
+        # Loop until the port is open
+        echo "Waiting for the port $PORT to be open..."
+        while ! check_port; do
+          sleep 1
+        done
+
+        # Port is open, proceed with the script
+        sshpass -p "$SSH_PASSWORD" ssh root@localhost -p 5558 "ls"
 
 
 
