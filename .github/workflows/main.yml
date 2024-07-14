@@ -25,6 +25,8 @@ jobs:
             az storage -h
             az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
             sleep 10
+            echo "Slept 10"
+            
       
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.3
