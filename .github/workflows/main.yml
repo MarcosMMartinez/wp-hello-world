@@ -22,7 +22,7 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az account set -s 'Marcos Subscription'            
-            apt-get install sshpass -y
+            apt install sshpass -y
 
             az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
 
