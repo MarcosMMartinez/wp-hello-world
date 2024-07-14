@@ -22,22 +22,26 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az account set -s 'Marcos Subscription'            
-            az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
-            echo "az webapp create-remote executed"
-            ssh root@localhost -p 5555
-            echo "ssh test"
-            sleep 10
-            echo "Slept 10"
+            apt-get install sshpass -y
+
+            az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
+
+            # Function to check if the port is open
+            check_port() {
+              ss -ltn | grep -q "127.0.0.1:5558"
+            }
+
+            # Loop until the port is open
+            echo "Waiting for the port $PORT to be open..."
+            while ! check_port; do
+              sleep 1
+            done
+
+            # Port is open, proceed with the script
+            sshpass -p "Docker!" ssh root@localhost -p 5555 "ls"
             
       
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: localhost
-          username: root
-          password: Docker!
-          port: 5555
-          script: whoami
+
 
 
 
