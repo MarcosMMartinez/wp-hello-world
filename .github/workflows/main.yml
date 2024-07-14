@@ -33,7 +33,7 @@ jobs:
         HOST=127.0.0.1
 
         az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
-
+        echo "Checking Port"
         # Function to check if the port is open
         check_port() {
           ss -ltn | grep -q "127.0.0.1:5558"
@@ -43,8 +43,10 @@ jobs:
         echo "Waiting for the port $PORT to be open..."
         while ! check_port; do
           sleep 1
+          echo "Sleep 1"
         done
 
+        echo "Port Listening"
         # Port is open, proceed with the script
         sshpass -p "$SSH_PASSWORD" ssh root@localhost -p 5558 "ls"
 
