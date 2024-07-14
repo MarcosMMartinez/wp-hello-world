@@ -23,23 +23,18 @@ jobs:
         az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Execute script
-      env:
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
         #!/bin/bash
 
-        # Define the port to check
-        PORT=1234
-        HOST=127.0.0.1
-
-        az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5558 &
+        echo "Opening SSH Tunnel"
+        az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
+        
         echo "Checking Port"
         # Function to check if the port is open
         check_port() {
-          ss -ltn | grep -q "127.0.0.1:5558"
+          ss -ltn | grep -q "127.0.0.1:5555"
         }
 
-        # Loop until the port is open
         echo "Waiting for the port $PORT to be open..."
         while ! check_port; do
           sleep 1
@@ -48,7 +43,7 @@ jobs:
 
         echo "Port Listening"
         # Port is open, proceed with the script
-        sshpass -p "Docker!" ssh -o StrictHostKeyChecking=no root@localhost -p 5558 "ls"
+        sshpass -p "Docker!" ssh -o StrictHostKeyChecking=no root@localhost -p 5555 "ls"
 
 
 
