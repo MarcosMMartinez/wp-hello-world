@@ -21,8 +21,11 @@ jobs:
         with:
           azcliversion: 2.0.72
           inlineScript: |
-            az account set -s 'Marcos Subscription'
+            az account set -s 'Marcos Subscription'            
             az webapp create-remote-connection --name php-markito --resource-group Web-Apps --port 5555 &
+            echo "az webapp create-remote executed"
+            ssh root@localhost -p 5555
+            echo "ssh test"
             sleep 10
             echo "Slept 10"
             
